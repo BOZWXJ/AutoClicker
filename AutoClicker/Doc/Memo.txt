@@ -1,0 +1,17 @@
+﻿
+・機能拡張
+Livet
+
+・NuGet
+ModernWpfUI
+
+ReactiveProperty.WPF
+
+PInvoke.User32
+
+
+
+
+1.Model に lsprop スニペッドでプロパティを作成する
+2.
+

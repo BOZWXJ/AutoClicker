@@ -1,0 +1,150 @@
+﻿<Window x:Class="AutoClicker.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:behaviors="http://schemas.microsoft.com/xaml/behaviors"
+        xmlns:l="http://schemas.livet-mvvm.net/2011/wpf"
+        xmlns:v="clr-namespace:AutoClicker.Views"
+        xmlns:vm="clr-namespace:AutoClicker.ViewModels"
+        xmlns:ui="http://schemas.modernwpf.com/2019"
+        xmlns:rp="clr-namespace:Reactive.Bindings.Interactivity;assembly=ReactiveProperty.WPF"
+        Title="AutoClicker"
+        Width="400"
+        Height="250"
+        MinWidth="400"
+        MinHeight="250"
+        UseLayoutRounding="True">
+
+    <Window.DataContext>
+        <vm:MainWindowViewModel />
+    </Window.DataContext>
+
+    <behaviors:Interaction.Triggers>
+        <!--  When ContentRendered event raised, Initialize method of ViewModel would be called.  -->
+        <behaviors:EventTrigger EventName="ContentRendered">
+            <l:LivetCallMethodAction MethodName="Initialize"
+                                     MethodTarget="{Binding}" />
+        </behaviors:EventTrigger>
+
+        <!--  Dispose method is called, when Window closing.  -->
+        <behaviors:EventTrigger EventName="Closed">
+            <l:DataContextDisposeAction />
+        </behaviors:EventTrigger>
+
+        <!--  If you make user choose 'OK or Cancel' closing Window, then please use Window Close cancel Behavior.  -->
+        <behaviors:EventTrigger EventName="Closing">
+            <rp:EventToReactiveCommand Command="{Binding WindowClose}" />
+        </behaviors:EventTrigger>
+
+    </behaviors:Interaction.Triggers>
+
+    <Grid Margin="6">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition />
+            <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+        <Label Content="送信先"
+               Grid.Row="0"
+               Grid.Column="0"
+               VerticalAlignment="Center"
+               Margin="6" />
+        <TextBox Text="{Binding Target.Value, Mode=TwoWay}"
+                 IsEnabled="{Binding TextBoxEnable.Value}"
+                 Grid.Row="0"
+                 Grid.Column="1"
+                 Grid.ColumnSpan="4"
+                 VerticalContentAlignment="Center"
+                 Margin="6" />
+        <Button Content="選択"
+                Command="{Binding SelectWindow}"
+                IsEnabled="{Binding TextBoxEnable.Value}"
+                Grid.Row="0"
+                Grid.Column="5"
+                VerticalContentAlignment="Center"
+                Margin="6" />
+
+        <Label Content="X"
+               Grid.Row="1"
+               Grid.Column="1"
+               VerticalContentAlignment="Center"
+               Margin="6" />
+        <ui:NumberBox Value="{Binding X.Value, Mode=TwoWay}"
+                      IsEnabled="{Binding TextBoxEnable.Value}"
+                      Grid.Row="1"
+                      Grid.Column="2"
+                      VerticalContentAlignment="Center"
+                      Margin="6"
+                      TextAlignment="Right"
+                      SpinButtonPlacementMode="Compact"
+                      HorizontalContentAlignment="Right"
+                      InputScope="Digits"
+                      Maximum="32767"
+                      Minimum="0" />
+        <Label Content="Y"
+               Grid.Row="1"
+               Grid.Column="3"
+               VerticalContentAlignment="Center"
+               Margin="6" />
+        <ui:NumberBox Value="{Binding Y.Value, Mode=TwoWay}"
+                      IsEnabled="{Binding TextBoxEnable.Value}"
+                      Grid.Row="1"
+                      Grid.Column="4"
+                      VerticalContentAlignment="Center"
+                      Margin="6"
+                      TextAlignment="Right"
+                      SpinButtonPlacementMode="Compact"
+                      HorizontalContentAlignment="Right"
+                      InputScope="Digits"
+                      Maximum="32767"
+                      Minimum="0" />
+
+        <Label Content="間隔"
+               Grid.Row="2"
+               Grid.Column="0"
+               VerticalAlignment="Center"
+               Margin="6" />
+        <ui:NumberBox Value="{Binding Interval.Value, Mode=TwoWay}"
+                      IsEnabled="{Binding TextBoxEnable.Value}"
+                      Grid.Row="2"
+                      Grid.Column="1"
+                      Grid.ColumnSpan="4"
+                      VerticalAlignment="Center"
+                      Margin="6"
+                      TextAlignment="Right"
+                      SpinButtonPlacementMode="Compact"
+                      HorizontalContentAlignment="Right"
+                      InputScope="Digits"
+                      Maximum="32767"
+                      Minimum="1" />
+        
+        <!--debug:-->
+        <Label Content="{Binding TestCount.Value}"
+               Grid.Row="2"
+               Grid.Column="5"
+               VerticalAlignment="Center"
+               Margin="6" />
+        
+        <ToggleButton Content="開始"
+                      Command="{Binding AutoClickStartStop}"
+                      IsChecked="{Binding ToggleButtonIsChecked.Value}"
+                      IsEnabled="{Binding ToggleButtonEnable.Value}"
+                      Grid.Row="3"
+                      Grid.Column="0"
+                      Grid.ColumnSpan="6"
+                      VerticalAlignment="Stretch"
+                      HorizontalAlignment="Stretch"
+                      Margin="6" />
+
+    </Grid>
+
+</Window>
+    
