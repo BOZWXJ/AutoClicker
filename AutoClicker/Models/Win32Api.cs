@@ -59,7 +59,8 @@ namespace AutoClicker
 
 		public static IntPtr MakeLParam(int low, int high)
 		{
-			return new IntPtr((long)((ulong)(high << (IntPtr.Size * 4)) | ((ulong)low & (0xffffffffffffffff << (IntPtr.Size * 4)))));
+			return new IntPtr((long)(((ulong)high << 16) | ((ulong)low & ~(0xffff_ffff_ffff_ffff << 16))));
+			//return new IntPtr((long)(((ulong)high << (IntPtr.Size * 4)) | ((ulong)low & ~(0xffff_ffff_ffff_ffff << (IntPtr.Size * 4)))));
 		}
 
 	}

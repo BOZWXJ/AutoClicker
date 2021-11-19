@@ -3,15 +3,15 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:behaviors="http://schemas.microsoft.com/xaml/behaviors"
         xmlns:l="http://schemas.livet-mvvm.net/2011/wpf"
+        xmlns:rp="clr-namespace:Reactive.Bindings.Interactivity;assembly=ReactiveProperty.WPF"
+        xmlns:ui="http://schemas.modernwpf.com/2019"
         xmlns:v="clr-namespace:AutoClicker.Views"
         xmlns:vm="clr-namespace:AutoClicker.ViewModels"
-        xmlns:ui="http://schemas.modernwpf.com/2019"
-        xmlns:rp="clr-namespace:Reactive.Bindings.Interactivity;assembly=ReactiveProperty.WPF"
         Title="AutoClicker"
-        Width="400"
-        Height="250"
-        MinWidth="400"
-        MinHeight="250"
+        Width="298"
+        Height="283"
+        MinWidth="320"
+        MinHeight="300"
         UseLayoutRounding="True">
 
     <Window.DataContext>
@@ -42,6 +42,7 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
@@ -49,102 +50,98 @@
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition />
             <ColumnDefinition Width="Auto" />
-            <ColumnDefinition />
-            <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
+
         <Label Content="送信先"
                Grid.Row="0"
                Grid.Column="0"
-               VerticalAlignment="Center"
-               Margin="6" />
-        <TextBox Text="{Binding Target.Value, Mode=TwoWay}"
-                 IsEnabled="{Binding TextBoxEnable.Value}"
-                 Grid.Row="0"
+               Margin="6"
+               VerticalAlignment="Center" />
+        <TextBox Grid.Row="0"
                  Grid.Column="1"
-                 Grid.ColumnSpan="4"
+                 Grid.ColumnSpan="2"
+                 Margin="6"
                  VerticalContentAlignment="Center"
-                 Margin="6" />
+                 IsEnabled="{Binding TextBoxEnable.Value}"
+                 Text="{Binding Target.Value, Mode=TwoWay}" />
         <Button Content="選択"
-                Command="{Binding SelectWindow}"
-                IsEnabled="{Binding TextBoxEnable.Value}"
                 Grid.Row="0"
                 Grid.Column="5"
+                Margin="6"
                 VerticalContentAlignment="Center"
-                Margin="6" />
+                Command="{Binding SelectWindow}"
+                IsEnabled="{Binding TextBoxEnable.Value}" />
 
         <Label Content="X"
                Grid.Row="1"
                Grid.Column="1"
-               VerticalContentAlignment="Center"
-               Margin="6" />
-        <ui:NumberBox Value="{Binding X.Value, Mode=TwoWay}"
-                      IsEnabled="{Binding TextBoxEnable.Value}"
-                      Grid.Row="1"
+               Margin="6"
+               VerticalContentAlignment="Center" />
+        <ui:NumberBox Grid.Row="1"
                       Grid.Column="2"
-                      VerticalContentAlignment="Center"
                       Margin="6"
-                      TextAlignment="Right"
-                      SpinButtonPlacementMode="Compact"
                       HorizontalContentAlignment="Right"
+                      VerticalContentAlignment="Center"
                       InputScope="Digits"
-                      Maximum="32767"
-                      Minimum="0" />
-        <Label Content="Y"
-               Grid.Row="1"
-               Grid.Column="3"
-               VerticalContentAlignment="Center"
-               Margin="6" />
-        <ui:NumberBox Value="{Binding Y.Value, Mode=TwoWay}"
                       IsEnabled="{Binding TextBoxEnable.Value}"
-                      Grid.Row="1"
-                      Grid.Column="4"
-                      VerticalContentAlignment="Center"
-                      Margin="6"
-                      TextAlignment="Right"
-                      SpinButtonPlacementMode="Compact"
-                      HorizontalContentAlignment="Right"
-                      InputScope="Digits"
                       Maximum="32767"
-                      Minimum="0" />
+                      Minimum="0"
+                      SpinButtonPlacementMode="Inline"
+                      TextAlignment="Right"
+                      Value="{Binding X.Value, Mode=TwoWay}" />
+        <Label Content="Y"
+               Grid.Row="2"
+               Grid.Column="1"
+               Margin="6"
+               VerticalContentAlignment="Center" />
+        <ui:NumberBox Grid.Row="2"
+                      Grid.Column="2"
+                      Margin="6"
+                      HorizontalContentAlignment="Right"
+                      VerticalContentAlignment="Center"
+                      InputScope="Digits"
+                      IsEnabled="{Binding TextBoxEnable.Value}"
+                      Maximum="32767"
+                      Minimum="0"
+                      SpinButtonPlacementMode="Inline"
+                      TextAlignment="Right"
+                      Value="{Binding Y.Value, Mode=TwoWay}" />
 
         <Label Content="間隔"
-               Grid.Row="2"
+               Grid.Row="3"
                Grid.Column="0"
-               VerticalAlignment="Center"
-               Margin="6" />
-        <ui:NumberBox Value="{Binding Interval.Value, Mode=TwoWay}"
-                      IsEnabled="{Binding TextBoxEnable.Value}"
-                      Grid.Row="2"
+               Margin="6"
+               VerticalAlignment="Center" />
+        <ui:NumberBox Grid.Row="3"
                       Grid.Column="1"
-                      Grid.ColumnSpan="4"
-                      VerticalAlignment="Center"
+                      Grid.ColumnSpan="2"
                       Margin="6"
-                      TextAlignment="Right"
-                      SpinButtonPlacementMode="Compact"
+                      VerticalAlignment="Center"
                       HorizontalContentAlignment="Right"
                       InputScope="Digits"
+                      IsEnabled="{Binding TextBoxEnable.Value}"
                       Maximum="32767"
-                      Minimum="1" />
-        
-        <!--debug:-->
-        <Label Content="{Binding TestCount.Value}"
-               Grid.Row="2"
-               Grid.Column="5"
-               VerticalAlignment="Center"
-               Margin="6" />
-        
+                      Minimum="1"
+                      SpinButtonPlacementMode="Inline"
+                      TextAlignment="Right"
+                      Value="{Binding Interval.Value, Mode=TwoWay}" />
+        <Label Content="msec"
+               Grid.Row="3"
+               Grid.Column="3"
+               Margin="6"
+               VerticalAlignment="Center" />
+
         <ToggleButton Content="開始"
+                      Grid.Row="4"
+                      Grid.Column="0"
+                      Grid.ColumnSpan="4"
+                      Margin="6"
+                      HorizontalAlignment="Stretch"
+                      VerticalAlignment="Stretch"
                       Command="{Binding AutoClickStartStop}"
                       IsChecked="{Binding ToggleButtonIsChecked.Value}"
-                      IsEnabled="{Binding ToggleButtonEnable.Value}"
-                      Grid.Row="3"
-                      Grid.Column="0"
-                      Grid.ColumnSpan="6"
-                      VerticalAlignment="Stretch"
-                      HorizontalAlignment="Stretch"
-                      Margin="6" />
+                      IsEnabled="{Binding ToggleButtonEnable.Value}" />
 
     </Grid>
 
 </Window>
-    

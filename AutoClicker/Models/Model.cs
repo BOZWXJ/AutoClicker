@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace AutoClicker.Models
@@ -28,6 +29,7 @@ namespace AutoClicker.Models
 
 		public void Dispose()
 		{
+			AutoClickStop();
 			hook.Dispose();
 		}
 
@@ -48,13 +50,10 @@ namespace AutoClicker.Models
 		private void Hook_MouseDownEvent(object sender, MouseHookEventArgs e)
 		{
 			if (SelectWindowBusy) {
-				// Window 取得
 				IntPtr hWnd = User32.WindowFromPoint(new POINT() { x = e.X, y = e.Y });
 				hWnd = User32.GetAncestor(hWnd, User32.GetAncestorFlags.GA_ROOT);
 				string str = User32.GetWindowText(hWnd);
-				if (string.IsNullOrEmpty(str)) {
-					str = User32.GetClassName(hWnd);
-				}
+				// ウィンドウのクライアント座標
 				RECT rect;
 				User32.GetWindowRect(hWnd, out rect);
 				Target = str;
@@ -64,23 +63,28 @@ namespace AutoClicker.Models
 			}
 		}
 
+		CancellationTokenSource tokenSource;
 		Task task;
 		public void AutoClickStart()
 		{
 			AutoClickBusy = true;
-			task = Task.Run(AutoClickMethod);
+			tokenSource = new CancellationTokenSource();
+			task = Task.Run(() => AutoClickMethod(tokenSource.Token), tokenSource.Token);
 		}
 
 		public void AutoClickStop()
 		{
-			AutoClickBusy = false;
-			task.Wait();
+			tokenSource?.Cancel();
+			task?.Wait();
 			task = null;
+			tokenSource = null;
+			AutoClickBusy = false;
 		}
 
-		private async void AutoClickMethod()
+		private async void AutoClickMethod(CancellationToken token)
 		{
 			IntPtr hWnd = IntPtr.Zero;
+			// MainWindowTitle に Target 文字列を含むウィンドウハンドル
 			foreach (var proc in Process.GetProcesses()) {
 				if (proc.MainWindowTitle.Contains(Target)) {
 					hWnd = proc.MainWindowHandle;
@@ -90,20 +94,28 @@ namespace AutoClicker.Models
 				AutoClickBusy = false;
 				return;
 			}
-			while (AutoClickBusy) {
-				TestCount++;
-				User32.SendMessage(hWnd, User32.WindowMessage.WM_LBUTTONDOWN, new IntPtr(1), Win32Api.MakeLParam(X, Y));
-				User32.SendMessage(hWnd, User32.WindowMessage.WM_LBUTTONUP, new IntPtr(0), Win32Api.MakeLParam(X, Y));
-				await Task.Delay(Interval).ConfigureAwait(false);
+			// ウィンドウ位置
+			RECT wRect;
+			User32.GetWindowRect(hWnd, out wRect);
+			// コントロールのウィンドウハンドル
+			hWnd = User32.WindowFromPoint(new POINT() { x = X + wRect.left, y = Y + wRect.top });
+			// コントロールの位置
+			RECT cRect;
+			User32.GetWindowRect(hWnd, out cRect);
+			// ウィンドウのクライアント座標からコントロールのクライアント座標へ変換
+			int x = X + wRect.left - cRect.left;
+			int y = Y + wRect.top - cRect.top;
+			IntPtr lParam = Win32Api.MakeLParam(x, y);
+			IntPtr wParam0 = new IntPtr(0);
+			IntPtr wParam1 = new IntPtr(1);
+
+			while (!token.IsCancellationRequested) {
+				User32.SendMessage(hWnd, User32.WindowMessage.WM_LBUTTONDOWN, wParam1, lParam);
+				User32.SendMessage(hWnd, User32.WindowMessage.WM_LBUTTONUP, wParam0, lParam);
+				try {
+					await Task.Delay(Interval, token).ConfigureAwait(false);
+				} catch (TaskCanceledException) { }
 			}
-		}
-
-
-		private int _TestCount; // debug:
-		public int TestCount
-		{
-			get => _TestCount;
-			set => RaisePropertyChangedIfSet(ref _TestCount, value);
 		}
 
 		private string _Target;

@@ -35,8 +35,6 @@ namespace AutoClicker.ViewModels
 		public ReactiveCommand AutoClickStartStop { get; } = new ReactiveCommand();
 		public ReactiveCommand WindowClose { get; } = new ReactiveCommand();
 
-		public ReadOnlyReactiveProperty<int> TestCount { get; } // debug:
-
 		public MainWindowViewModel()
 		{
 			model = new Model();
@@ -66,9 +64,6 @@ namespace AutoClicker.ViewModels
 				}
 				model.Save();
 			});
-
-			TestCount = model.ObserveProperty(p => p.TestCount).ToReadOnlyReactiveProperty(); // debug:
-
 		}
 
 		public void Initialize()
