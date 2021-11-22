@@ -70,7 +70,7 @@ namespace AutoClicker
 				break;
 			}
 			if (cancel) {
-				return (int)new IntPtr(1);
+				return (int)new IntPtr(0);
 			} else {
 				return User32.CallNextHookEx(keyHookId.DangerousGetHandle(), nCode, wParam, lParam);
 			}
@@ -175,7 +175,7 @@ namespace AutoClicker
 		}
 	}
 
-	public class MouseHookEventArgs : EventArgs
+	public class MouseHookEventArgs : CancelEventArgs
 	{
 		public MouseButton Button { get; }
 		public int X { get; }

@@ -61,6 +61,7 @@ namespace AutoClicker.Models
 				Y = e.Y - rect.top;
 				SelectWindowBusy = false;
 			}
+
 		}
 
 		CancellationTokenSource tokenSource;
@@ -106,12 +107,13 @@ namespace AutoClicker.Models
 			int x = X + wRect.left - cRect.left;
 			int y = Y + wRect.top - cRect.top;
 			IntPtr lParam = Win32Api.MakeLParam(x, y);
-			IntPtr wParam0 = new IntPtr(0);
-			IntPtr wParam1 = new IntPtr(1);
+			IntPtr wParam = new IntPtr(0);
 
 			while (!token.IsCancellationRequested) {
-				User32.SendMessage(hWnd, User32.WindowMessage.WM_LBUTTONDOWN, wParam1, lParam);
-				User32.SendMessage(hWnd, User32.WindowMessage.WM_LBUTTONUP, wParam0, lParam);
+				User32.SendMessage(hWnd, User32.WindowMessage.WM_MOUSEMOVE, wParam, lParam);
+				User32.SendMessage(hWnd, User32.WindowMessage.WM_LBUTTONDOWN, wParam, lParam);
+				User32.SendMessage(hWnd, User32.WindowMessage.WM_MOUSEMOVE, wParam, lParam);
+				User32.SendMessage(hWnd, User32.WindowMessage.WM_LBUTTONUP, wParam, lParam);
 				try {
 					await Task.Delay(Interval, token).ConfigureAwait(false);
 				} catch (TaskCanceledException) { }
