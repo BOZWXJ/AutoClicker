@@ -89,6 +89,13 @@
                       SpinButtonPlacementMode="Inline"
                       TextAlignment="Right"
                       Value="{Binding X.Value, Mode=TwoWay}" />
+        <Button Content="取得"
+                Grid.Row="1"
+                Grid.Column="3"
+                Margin="6"
+                VerticalContentAlignment="Center"
+                Command="{Binding SelectPosition}"
+                IsEnabled="{Binding TextBoxEnable.Value}" />
         <Label Content="Y"
                Grid.Row="2"
                Grid.Column="1"

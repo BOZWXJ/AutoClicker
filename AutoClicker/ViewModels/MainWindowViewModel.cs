@@ -25,6 +25,7 @@ namespace AutoClicker.ViewModels
 		public ReactivePropertySlim<int> Y { get; }
 		public ReactivePropertySlim<int> Interval { get; }
 		public ReactivePropertySlim<bool> SelectWindowBusy { get; }
+		public ReactivePropertySlim<bool> SelectPositionBusy { get; }
 		public ReactivePropertySlim<bool> AutoClickBusy { get; }
 
 		public ReadOnlyReactiveProperty<bool> TextBoxEnable { get; }
@@ -32,6 +33,7 @@ namespace AutoClicker.ViewModels
 		public ReadOnlyReactiveProperty<bool> ToggleButtonEnable { get; }
 
 		public ReactiveCommand SelectWindow { get; } = new ReactiveCommand();
+		public ReactiveCommand SelectPosition { get; } = new ReactiveCommand();
 		public ReactiveCommand AutoClickStartStop { get; } = new ReactiveCommand();
 		public ReactiveCommand WindowClose { get; } = new ReactiveCommand();
 
@@ -43,14 +45,16 @@ namespace AutoClicker.ViewModels
 			Y = model.ToReactivePropertySlimAsSynchronized(p => p.Y);
 			Interval = model.ToReactivePropertySlimAsSynchronized(p => p.Interval);
 			SelectWindowBusy = model.ToReactivePropertySlimAsSynchronized(p => p.SelectWindowBusy);
+			SelectPositionBusy = model.ToReactivePropertySlimAsSynchronized(p => p.SelectPositionBusy);
 			AutoClickBusy = model.ToReactivePropertySlimAsSynchronized(p => p.AutoClickBusy);
 
-			TextBoxEnable = SelectWindowBusy.CombineLatest(AutoClickBusy, (x, y) => !(x | y)).ToReadOnlyReactiveProperty();
+			TextBoxEnable = SelectWindowBusy.CombineLatest(SelectPositionBusy, AutoClickBusy, (x, y, z) => !(x | y | z)).ToReadOnlyReactiveProperty();
 			ToggleButtonIsChecked = AutoClickBusy.ToReactivePropertyAsSynchronized(p => p.Value, (IObservable<bool> ox) => ox.Where(p => !p).Select(p => p), (IObservable<bool> ox) => ox.Where(p => false).Select(p => p));
-			ToggleButtonEnable = SelectWindowBusy.Inverse().ToReadOnlyReactiveProperty();
+			ToggleButtonEnable = SelectWindowBusy.CombineLatest(SelectPositionBusy, (x, y) => !(x | y)).ToReadOnlyReactiveProperty();
 
 			// イベント
 			SelectWindow.Subscribe(model.SelectWindow);
+			SelectPosition.Subscribe(model.SelectPosition);
 			AutoClickStartStop.Subscribe(p => {
 				if (model.AutoClickBusy) {
 					model.AutoClickStop();

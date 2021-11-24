@@ -47,21 +47,29 @@ namespace AutoClicker.Models
 			SelectWindowBusy = true;
 		}
 
+		public void SelectPosition()
+		{
+			SelectPositionBusy = true;
+		}
+
 		private void Hook_MouseDownEvent(object sender, MouseHookEventArgs e)
 		{
-			if (SelectWindowBusy) {
+			if (SelectWindowBusy | SelectPositionBusy) {
 				IntPtr hWnd = User32.WindowFromPoint(new POINT() { x = e.X, y = e.Y });
 				hWnd = User32.GetAncestor(hWnd, User32.GetAncestorFlags.GA_ROOT);
 				string str = User32.GetWindowText(hWnd);
-				// ウィンドウのクライアント座標
-				RECT rect;
-				User32.GetWindowRect(hWnd, out rect);
-				Target = str;
-				X = e.X - rect.left;
-				Y = e.Y - rect.top;
+				if (SelectWindowBusy) {
+					Target = str;
+				}
+				if (str.Contains(Target)) {
+					// ウィンドウのクライアント座標
+					User32.GetWindowRect(hWnd, out RECT rect);
+					X = e.X - rect.left;
+					Y = e.Y - rect.top;
+				}
 				SelectWindowBusy = false;
+				SelectPositionBusy = false;
 			}
-
 		}
 
 		CancellationTokenSource tokenSource;
@@ -153,6 +161,13 @@ namespace AutoClicker.Models
 		{
 			get => _SelectWindowBusy;
 			set => RaisePropertyChangedIfSet(ref _SelectWindowBusy, value);
+		}
+
+		private bool _SelectPositionBusy;
+		public bool SelectPositionBusy
+		{
+			get => _SelectPositionBusy;
+			set => RaisePropertyChangedIfSet(ref _SelectPositionBusy, value);
 		}
 
 		private bool _AutoClickBusy;
