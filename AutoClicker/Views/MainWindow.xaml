@@ -57,19 +57,20 @@
                Grid.Column="0"
                Margin="6"
                VerticalAlignment="Center" />
-        <TextBox Grid.Row="0"
-                 Grid.Column="1"
-                 Grid.ColumnSpan="2"
-                 Margin="6"
-                 VerticalContentAlignment="Center"
-                 IsEnabled="{Binding TextBoxEnable.Value}"
-                 Text="{Binding Target.Value, Mode=TwoWay}" />
-        <Button Content="選択"
+        <ComboBox Grid.Row="0"
+                  Grid.Column="1"
+                  Grid.ColumnSpan="2"
+                  Margin="6"
+                  HorizontalAlignment="Stretch"
+                  IsEditable="True"
+                  ItemsSource="{Binding TitleList.Value}"
+                  Text="{Binding Target.Value}" />
+        <Button Content="更新"
                 Grid.Row="0"
                 Grid.Column="5"
                 Margin="6"
                 VerticalContentAlignment="Center"
-                Command="{Binding SelectWindow}"
+                Command="{Binding RefreshTitleList}"
                 IsEnabled="{Binding TextBoxEnable.Value}" />
 
         <Label Content="X"

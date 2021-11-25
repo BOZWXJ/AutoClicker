@@ -9,6 +9,7 @@ using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Reactive.Linq;
@@ -20,6 +21,7 @@ namespace AutoClicker.ViewModels
 	{
 		// Some useful code snippets for ViewModel are defined as l*(llcom, llcomn, lvcomm, lsprop, etc...).
 		private Model model;
+		public ReactivePropertySlim<ObservableCollection<string>> TitleList { get; }
 		public ReactivePropertySlim<string> Target { get; }
 		public ReactivePropertySlim<int> X { get; }
 		public ReactivePropertySlim<int> Y { get; }
@@ -32,7 +34,7 @@ namespace AutoClicker.ViewModels
 		public ReactiveProperty<bool> ToggleButtonIsChecked { get; }
 		public ReadOnlyReactiveProperty<bool> ToggleButtonEnable { get; }
 
-		public ReactiveCommand SelectWindow { get; } = new ReactiveCommand();
+		public ReactiveCommand RefreshTitleList { get; } = new ReactiveCommand();
 		public ReactiveCommand SelectPosition { get; } = new ReactiveCommand();
 		public ReactiveCommand AutoClickStartStop { get; } = new ReactiveCommand();
 		public ReactiveCommand WindowClose { get; } = new ReactiveCommand();
@@ -40,6 +42,7 @@ namespace AutoClicker.ViewModels
 		public MainWindowViewModel()
 		{
 			model = new Model();
+			TitleList = model.ToReactivePropertySlimAsSynchronized(p => p.TitleList);
 			Target = model.ToReactivePropertySlimAsSynchronized(p => p.Target);
 			X = model.ToReactivePropertySlimAsSynchronized(p => p.X);
 			Y = model.ToReactivePropertySlimAsSynchronized(p => p.Y);
@@ -53,7 +56,7 @@ namespace AutoClicker.ViewModels
 			ToggleButtonEnable = SelectWindowBusy.CombineLatest(SelectPositionBusy, (x, y) => !(x | y)).ToReadOnlyReactiveProperty();
 
 			// イベント
-			SelectWindow.Subscribe(model.SelectWindow);
+			RefreshTitleList.Subscribe(model.RefreshTitleList);
 			SelectPosition.Subscribe(model.SelectPosition);
 			AutoClickStartStop.Subscribe(p => {
 				if (model.AutoClickBusy) {

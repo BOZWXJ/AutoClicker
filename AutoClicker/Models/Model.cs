@@ -3,6 +3,7 @@ using Livet;
 using PInvoke;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
@@ -21,6 +22,7 @@ namespace AutoClicker.Models
 			X = Settings.Default.X;
 			Y = Settings.Default.Y;
 			Interval = Settings.Default.Interval;
+			RefreshTitleList();
 
 			hook = new KeyMouseHook();
 			hook.MouseDownEvent += Hook_MouseDownEvent;
@@ -126,6 +128,23 @@ namespace AutoClicker.Models
 					await Task.Delay(Interval, token).ConfigureAwait(false);
 				} catch (TaskCanceledException) { }
 			}
+		}
+
+		public void RefreshTitleList()
+		{
+			TitleList.Clear();
+			foreach (var proc in Process.GetProcesses()) {
+				if (!string.IsNullOrWhiteSpace(proc.MainWindowTitle)) {
+					TitleList.Add(proc.MainWindowTitle);
+				}
+			}
+		}
+
+		private ObservableCollection<string> _TitleList = new ObservableCollection<string>();
+		public ObservableCollection<string> TitleList
+		{
+			get => _TitleList;
+			set => RaisePropertyChangedIfSet(ref _TitleList, value);
 		}
 
 		private string _Target;
