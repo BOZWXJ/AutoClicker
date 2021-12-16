@@ -52,7 +52,7 @@ namespace AutoClicker.ViewModels
 			AutoClickBusy = model.ToReactivePropertySlimAsSynchronized(p => p.AutoClickBusy);
 
 			TextBoxEnable = SelectWindowBusy.CombineLatest(SelectPositionBusy, AutoClickBusy, (x, y, z) => !(x | y | z)).ToReadOnlyReactiveProperty();
-			ToggleButtonIsChecked = AutoClickBusy.ToReactivePropertyAsSynchronized(p => p.Value, (IObservable<bool> ox) => ox.Where(p => !p).Select(p => p), (IObservable<bool> ox) => ox.Where(p => false).Select(p => p));
+			ToggleButtonIsChecked = AutoClickBusy.ToReactivePropertyAsSynchronized(p => p.Value);
 			ToggleButtonEnable = SelectWindowBusy.CombineLatest(SelectPositionBusy, (x, y) => !(x | y)).ToReadOnlyReactiveProperty();
 
 			// イベント

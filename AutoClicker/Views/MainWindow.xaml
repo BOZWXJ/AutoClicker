@@ -147,7 +147,7 @@
                       HorizontalAlignment="Stretch"
                       VerticalAlignment="Stretch"
                       Command="{Binding AutoClickStartStop}"
-                      IsChecked="{Binding ToggleButtonIsChecked.Value}"
+                      IsChecked="{Binding ToggleButtonIsChecked.Value, Mode=OneWay}"
                       IsEnabled="{Binding ToggleButtonEnable.Value}" />
 
     </Grid>
